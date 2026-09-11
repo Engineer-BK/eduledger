@@ -1,0 +1,103 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    /* 📜 Paper Backgrounds */
+    --color-paper: #FAF7F0;
+    --color-paper-dark: #EFE9DC;
+
+    /* ✒️ Ink Navy Base (Text / Dark Surfaces) */
+    --color-ink-50: #EEF0F4;
+    --color-ink-100: #E2E6EE;
+    --color-ink-200: #B7BECC;
+    --color-ink-300: #8895B0;
+    --color-ink-400: #5C6A87;
+    --color-ink-500: #425070;
+    --color-ink-600: #33415F;
+    --color-ink-700: #27344E;
+    --color-ink-800: #1F2A44;
+    --color-ink-900: #141B2E;
+
+    /* 👑 Brass Gold (CTAs / Badges / Accents) */
+    --color-brass-100: #F3E3C4;
+    --color-brass-200: #E6C991;
+    --color-brass-300: #D9AF5D;
+    --color-brass-400: #C99A43;
+    --color-brass-500: #B8862B;
+    --color-brass-600: #A27221;
+    --color-brass-700: #8C6420;
+
+    /* 🧹 Chalkboard Green (Success / Present / Paid) */
+    --color-chalk: #2F4B3C;
+    --color-chalk-light: #4A6B58;
+    --color-chalk-bg: #EAF2EC;
+
+    /* 🖊️ Redpen Red (Overdue / Absent / Error) */
+    --color-redpen: #A63D40;
+    --color-redpen-light: #C46265;
+    --color-redpen-bg: #FDF0F0;
+  }
+}
+
+@theme {
+  --color-paper: var(--color-paper);
+  --color-paper-dark: var(--color-paper-dark);
+
+  --color-ink-50: var(--color-ink-50);
+  --color-ink-100: var(--color-ink-100);
+  --color-ink-200: var(--color-ink-200);
+  --color-ink-300: var(--color-ink-300);
+  --color-ink-400: var(--color-ink-400);
+  --color-ink-500: var(--color-ink-500);
+  --color-ink-600: var(--color-ink-600);
+  --color-ink-700: var(--color-ink-700);
+  --color-ink-800: var(--color-ink-800);
+  --color-ink-900: var(--color-ink-900);
+
+  --color-brass-100: var(--color-brass-100);
+  --color-brass-200: var(--color-brass-200);
+  --color-brass-300: var(--color-brass-300);
+  --color-brass-400: var(--color-brass-400);
+  --color-brass-500: var(--color-brass-500);
+  --color-brass-600: var(--color-brass-600);
+  --color-brass-700: var(--color-brass-700);
+
+  --color-chalk: var(--color-chalk);
+  --color-chalk-light: var(--color-chalk-light);
+  --color-chalk-bg: var(--color-chalk-bg);
+
+  --color-redpen: var(--color-redpen);
+  --color-redpen-light: var(--color-redpen-light);
+  --color-redpen-bg: var(--color-redpen-bg);
+
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+body {
+  background-color: var(--color-paper);
+  color: var(--color-ink-800);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Custom ledger monospaced numerical formatting */
+.font-ledger-mono {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-paper-dark);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-ink-200);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-ink-400);
+}
