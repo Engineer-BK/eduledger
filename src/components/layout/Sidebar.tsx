@@ -1,7 +1,9 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { getStoredAnnouncements } from "@/lib/announcements";
 import {
   LayoutDashboard,
   Bell,
@@ -25,6 +27,21 @@ interface SidebarProps {
 
 export default function Sidebar({ currentRole, userEmail, userName, onSwitchRole }: SidebarProps) {
   const pathname = usePathname();
+  const [unreadCount, setUnreadCount] = useState<number>(3);
+
+  useEffect(() => {
+    const updateCount = () => {
+      const stored = getStoredAnnouncements();
+      const count = stored.filter((a) => !a.isRead).length;
+      setUnreadCount(count);
+    };
+
+    updateCount();
+    window.addEventListener("eduledger_announcements_updated", updateCount);
+    return () => {
+      window.removeEventListener("eduledger_announcements_updated", updateCount);
+    };
+  }, []);
 
   const getRoleLabel = () => {
     switch (currentRole) {
@@ -44,7 +61,12 @@ export default function Sidebar({ currentRole, userEmail, userName, onSwitchRole
       title: "REGISTRY",
       items: [
         { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-        { name: "Announcements", href: "/dashboard/announcements", icon: Bell, badge: "3" },
+        {
+          name: "Announcements",
+          href: "/dashboard/announcements",
+          icon: Bell,
+          badge: unreadCount > 0 ? String(unreadCount) : undefined,
+        },
         { name: "Timetable", href: "/dashboard/timetable", icon: Calendar },
       ],
     },
