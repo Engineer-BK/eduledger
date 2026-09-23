@@ -161,7 +161,7 @@ function AnnouncementsContent() {
       title: data.title,
       content: data.content,
       author: userName || (currentRole === "ADMIN" ? "Headmaster's Office" : "Faculty Dept."),
-      authorRole: currentRole === "STUDENT" ? "STAFF" : currentRole,
+      authorRole: currentRole === "ADMIN" ? "ADMIN" : currentRole === "TEACHER" ? "TEACHER" : "STAFF",
       category: data.category,
       targetAudience: data.targetAudience,
       dateFormatted: `${now.toLocaleDateString("en-GB", {
