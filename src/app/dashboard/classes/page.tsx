@@ -340,13 +340,13 @@ function ClassesContent() {
               </div>
 
               <div className="relative w-full sm:w-64">
-                <Search className="w-4 h-4 absolute left-3 top-2.5 text-[#8895B0]" />
+                <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8895B0] pointer-events-none" />
                 <input
                   type="text"
                   placeholder="Filter classes..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-3 py-1.5 bg-[#FAF7F0] border border-[#E2E6EE] rounded-xl text-xs text-[#141B2E] focus:outline-none focus:border-[#B8862B]"
+                  className="w-full pl-10 pr-4 py-2 bg-[#FAF7F0] border border-[#E2E6EE] rounded-xl text-xs font-semibold text-[#141B2E] placeholder:text-[#8895B0] placeholder:font-normal focus:outline-none focus:border-[#B8862B] focus:bg-white focus:ring-2 focus:ring-[#B8862B]/20 shadow-2xs transition-all"
                 />
               </div>
             </div>

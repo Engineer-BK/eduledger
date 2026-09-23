@@ -1,6 +1,8 @@
 "use client";
 
-import { Search, Bell, ChevronDown, Sparkles } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
+import { Search, Bell, ChevronDown, Sparkles, X, GraduationCap, School, BellRing } from "lucide-react";
 
 interface TopNavProps {
   currentRole: "ADMIN" | "TEACHER" | "PARENT" | "STUDENT";
@@ -9,6 +11,22 @@ interface TopNavProps {
 }
 
 export default function TopNav({ currentRole, onRoleChange, userName }: TopNavProps) {
+  const [query, setQuery] = useState("");
+  const [isFocused, setIsFocused] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Global Ctrl+K / Cmd+K listener to focus search box
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   const getRoleDetails = () => {
     switch (currentRole) {
       case "TEACHER":
@@ -24,48 +42,113 @@ export default function TopNav({ currentRole, onRoleChange, userName }: TopNavPr
 
   const details = getRoleDetails();
 
+  // Search Results
+  const quickLinks = [
+    { label: "Amara Osei (Form 3A)", category: "STUDENT", href: "/dashboard/students", icon: GraduationCap },
+    { label: "Year 11 Physics (Lab 2)", category: "CLASS", href: "/dashboard/classes", icon: School },
+    { label: "Tuition Fees Notice", category: "ANNOUNCEMENT", href: "/dashboard/announcements", icon: BellRing },
+    { label: "Clara Mensah (Form 2B)", category: "STUDENT", href: "/dashboard/students", icon: GraduationCap },
+  ];
+
+  const filteredQuickLinks = query.trim()
+    ? quickLinks.filter((item) => item.label.toLowerCase().includes(query.toLowerCase()))
+    : quickLinks;
+
   return (
-    <header className="h-16 bg-paper border-b border-ink-200/80 px-6 flex items-center justify-between sticky top-0 z-30 select-none">
+    <header className="h-16 bg-[#FAF7F0] border-b border-[#E2E6EE] px-6 flex items-center justify-between sticky top-0 z-30 select-none">
       {/* Global Search Field */}
       <div className="relative w-72 sm:w-96">
-        <Search className="w-4 h-4 text-ink-400 absolute left-3 top-2.5" />
-        <input
-          type="text"
-          placeholder="Search classes, students, notices..."
-          className="w-full pl-9 pr-9 py-1.5 text-xs border border-ink-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-brass-500/40 focus:border-brass-500 placeholder:text-ink-300 font-medium"
-        />
-        <kbd className="absolute right-2.5 top-2 text-[10px] font-mono text-ink-400 bg-ink-50 px-1.5 py-0.5 rounded border border-ink-200">
-          ⌘K
-        </kbd>
+        <div className="relative flex items-center w-full">
+          <Search className="w-4 h-4 text-[#8895B0] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <input
+            ref={searchInputRef}
+            type="text"
+            placeholder="Search classes, students, notices..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setTimeout(() => setIsFocused(false), 200)}
+            className="w-full pl-10 pr-12 py-2 bg-white border border-[#E2E6EE] rounded-xl text-xs font-semibold text-[#141B2E] placeholder:text-[#8895B0] placeholder:font-normal focus:outline-none focus:border-[#B8862B] focus:ring-2 focus:ring-[#B8862B]/20 shadow-2xs transition-all"
+          />
+
+          {query ? (
+            <button
+              onClick={() => setQuery("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-0.5 hover:bg-[#EEF0F4] text-[#8895B0] hover:text-[#141B2E] rounded-md transition-colors"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          ) : (
+            <kbd className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] font-mono font-semibold text-[#5C6A87] bg-[#FAF7F0] px-1.5 py-0.5 rounded-md border border-[#E2E6EE] shadow-2xs pointer-events-none select-none">
+              ⌘K
+            </kbd>
+          )}
+        </div>
+
+        {/* Live Search Overlay Results */}
+        {isFocused && (
+          <div className="absolute left-0 right-0 mt-2 bg-white border border-[#E2E6EE] rounded-2xl shadow-xl p-2 z-50 animate-in fade-in duration-100">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-[#8895B0] px-3 py-1.5 block font-semibold">
+              {query ? `Search Results (${filteredQuickLinks.length})` : "Quick Navigation Suggestions"}
+            </span>
+
+            <div className="space-y-1">
+              {filteredQuickLinks.length === 0 ? (
+                <div className="p-3 text-xs text-[#5C6A87] text-center font-mono">
+                  No matching ledger results found
+                </div>
+              ) : (
+                filteredQuickLinks.map((item, idx) => {
+                  const Icon = item.icon;
+                  return (
+                    <Link
+                      key={idx}
+                      href={item.href}
+                      className="flex items-center justify-between px-3 py-2 rounded-xl text-xs hover:bg-[#FAF7F0] transition-colors group"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <Icon className="w-4 h-4 text-[#8895B0] group-hover:text-[#B8862B]" />
+                        <span className="font-bold text-[#141B2E]">{item.label}</span>
+                      </div>
+                      <span className="text-[9px] font-mono text-[#5C6A87] bg-[#EEF0F4] px-1.5 py-0.5 rounded">
+                        {item.category}
+                      </span>
+                    </Link>
+                  );
+                })
+              )}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Right User & Context Strip */}
       <div className="flex items-center gap-4">
         {/* Date & Term Tag */}
-        <div className="hidden md:flex items-center gap-2 text-[11px] font-mono text-ink-500">
+        <div className="hidden md:flex items-center gap-2 text-[11px] font-mono text-[#5C6A87]">
           <span>WED 10 SEPT 2026</span>
-          <span className="text-ink-300">•</span>
-          <span className="bg-brass-100 text-brass-700 font-bold px-2 py-0.5 rounded">
+          <span className="text-[#B7BECC]">•</span>
+          <span className="bg-[#F3E3C4] text-[#8C6420] font-bold px-2 py-0.5 rounded">
             TERM 1
           </span>
         </div>
 
         {/* Role Switcher Pill Dropdown */}
         <div className="relative group">
-          <button className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-ink-200 rounded-xl text-xs font-bold text-ink-800 hover:border-brass-500 transition-colors shadow-2xs">
-            <Sparkles className="w-3.5 h-3.5 text-brass-600" />
+          <button className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-[#E2E6EE] rounded-xl text-xs font-bold text-[#141B2E] hover:border-[#B8862B] transition-colors shadow-2xs">
+            <Sparkles className="w-3.5 h-3.5 text-[#B8862B]" />
             <span className="capitalize">{currentRole.toLowerCase()} View</span>
-            <ChevronDown className="w-3.5 h-3.5 text-ink-400" />
+            <ChevronDown className="w-3.5 h-3.5 text-[#8895B0]" />
           </button>
 
-          <div className="absolute right-0 mt-1 w-44 bg-white border border-ink-200 rounded-xl shadow-lg p-1.5 hidden group-hover:block z-50">
-            <span className="text-[10px] font-mono uppercase tracking-wider text-ink-400 px-2 py-1 block">
+          <div className="absolute right-0 mt-1 w-44 bg-white border border-[#E2E6EE] rounded-xl shadow-lg p-1.5 hidden group-hover:block z-50">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-[#8895B0] px-2 py-1 block font-semibold">
               Switch Role View:
             </span>
             <button
               onClick={() => onRoleChange("TEACHER")}
               className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center justify-between ${
-                currentRole === "TEACHER" ? "bg-brass-100 text-brass-800 font-bold" : "hover:bg-ink-50 text-ink-700"
+                currentRole === "TEACHER" ? "bg-[#F3E3C4] text-[#8C6420] font-bold" : "hover:bg-[#FAF7F0] text-[#141B2E]"
               }`}
             >
               👩‍🏫 Teacher View
@@ -73,7 +156,7 @@ export default function TopNav({ currentRole, onRoleChange, userName }: TopNavPr
             <button
               onClick={() => onRoleChange("PARENT")}
               className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center justify-between ${
-                currentRole === "PARENT" ? "bg-brass-100 text-brass-800 font-bold" : "hover:bg-ink-50 text-ink-700"
+                currentRole === "PARENT" ? "bg-[#F3E3C4] text-[#8C6420] font-bold" : "hover:bg-[#FAF7F0] text-[#141B2E]"
               }`}
             >
               👨‍👩‍👧 Parent View
@@ -81,7 +164,7 @@ export default function TopNav({ currentRole, onRoleChange, userName }: TopNavPr
             <button
               onClick={() => onRoleChange("STUDENT")}
               className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center justify-between ${
-                currentRole === "STUDENT" ? "bg-brass-100 text-brass-800 font-bold" : "hover:bg-ink-50 text-ink-700"
+                currentRole === "STUDENT" ? "bg-[#F3E3C4] text-[#8C6420] font-bold" : "hover:bg-[#FAF7F0] text-[#141B2E]"
               }`}
             >
               🎓 Student View
@@ -89,7 +172,7 @@ export default function TopNav({ currentRole, onRoleChange, userName }: TopNavPr
             <button
               onClick={() => onRoleChange("ADMIN")}
               className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs font-medium flex items-center justify-between ${
-                currentRole === "ADMIN" ? "bg-brass-100 text-brass-800 font-bold" : "hover:bg-ink-50 text-ink-700"
+                currentRole === "ADMIN" ? "bg-[#F3E3C4] text-[#8C6420] font-bold" : "hover:bg-[#FAF7F0] text-[#141B2E]"
               }`}
             >
               🔑 Admin View
@@ -98,21 +181,21 @@ export default function TopNav({ currentRole, onRoleChange, userName }: TopNavPr
         </div>
 
         {/* Notifications Icon */}
-        <button className="relative p-2 rounded-xl hover:bg-ink-100 text-ink-600 transition-colors">
+        <button className="relative p-2 rounded-xl hover:bg-[#EEF0F4] text-[#5C6A87] transition-colors">
           <Bell className="w-4 h-4" />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-redpen"></span>
+          <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#A63D40]"></span>
         </button>
 
         {/* User Badge */}
-        <div className="flex items-center gap-2.5 pl-2 border-l border-ink-200">
-          <div className="w-8 h-8 rounded-full bg-ink-800 text-paper font-mono font-bold text-xs flex items-center justify-center border border-brass-500/50">
+        <div className="flex items-center gap-2.5 pl-2 border-l border-[#E2E6EE]">
+          <div className="w-8 h-8 rounded-full bg-[#1F2A44] text-[#FAF7F0] font-mono font-bold text-xs flex items-center justify-center border border-[#B8862B]/50">
             {details.avatar}
           </div>
           <div className="hidden sm:block text-left">
-            <span className="text-xs font-bold text-ink-800 block leading-tight">
+            <span className="text-xs font-bold text-[#141B2E] block leading-tight">
               {details.name}
             </span>
-            <span className="text-[10px] font-mono text-ink-400 block leading-none">
+            <span className="text-[10px] font-mono text-[#5C6A87] block leading-none">
               {details.subtitle}
             </span>
           </div>

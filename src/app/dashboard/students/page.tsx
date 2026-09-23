@@ -190,14 +190,22 @@ function StudentsContent() {
             <div className="flex items-center gap-3">
               {/* Search Bar */}
               <div className="relative w-full sm:w-64">
-                <Search className="w-4 h-4 absolute left-3 top-2.5 text-[#8895B0]" />
+                <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8895B0] pointer-events-none" />
                 <input
                   type="text"
                   placeholder="Search students..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 bg-white border border-[#E2E6EE] rounded-xl text-xs text-[#141B2E] placeholder:text-[#8895B0] focus:outline-none focus:border-[#B8862B] transition-colors"
+                  className="w-full pl-10 pr-9 py-2 bg-white border border-[#E2E6EE] rounded-xl text-xs font-semibold text-[#141B2E] placeholder:text-[#8895B0] placeholder:font-normal focus:outline-none focus:border-[#B8862B] focus:ring-2 focus:ring-[#B8862B]/20 shadow-2xs transition-all"
                 />
+                {searchQuery ? (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 hover:bg-[#EEF0F4] text-[#8895B0] rounded-md transition-colors"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                ) : null}
               </div>
 
               {/* Add Student Button */}
